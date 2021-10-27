@@ -1,9 +1,19 @@
 // calling sequelize and importing Model class and DataTypes object
 const { Model, DataTypes } = require('sequelize');
+
+//imports bcrypt
+const bcrypt = require('bcrypt');
+
 const sequelize = require('../config/connection');
 
+
 //create our User model inheriting all functionality the Model class has
-class User extends Model { }
+class User extends Model {
+    //set up method to run on instance data(per user) to check password
+    checkPassword(loginPw) {
+        return bcrypt.compareSync(loginPw, this.password);
+    }
+}
 
 //define table columns and configuration, passing in two objects as arguments
 User.init(
@@ -12,38 +22,54 @@ User.init(
         //define an id column
         id: {
             //use the special Sequelize DataTypes object to provide what type of data it is
-            type:DataTypes.INTEGER,
+            type: DataTypes.INTEGER,
             //this is the eqvivalent of SQL's `Not Null` option
             allowNull: false,
             //instruct that this is the primary key
-            primaryKey:true
+            primaryKey: true,
+
+            autoIncrement: true
         },
         //define a username column
         username: {
             type: DataTypes.STRING,
-            allowNull:false
+            allowNull: false
         },
         //define an email colum
         email: {
-            type:DataTypes.STRING,
+            type: DataTypes.STRING,
             //there cannot be any duplicate email values in this table
-            unique:true,
+            unique: true,
             //if allowNull is set to false, we can run out data throught validators before creating the table data
-            validate:{
-                isEmail:true
+            validate: {
+                isEmail: true
             }
         },
         //define a password column
         password: {
-            type:DataTypes.STRING,
-            allowNull:false,
+            type: DataTypes.STRING,
+            allowNull: false,
             validate: {
                 //this means the password must be at least four characters long
-                len:[4]
+                len: [4]
             }
-        }
+        },
     },
     {
+        //use hooks for bcrypt to encrypt passwords
+        hooks: {
+            //set up beforeCreate lifecycle "hook" functionality
+            async beforeCreate(userData) {
+                newUserData.password = await bcrypt.hash(newUserData.password, 10)
+                return newUserData;
+            },
+            // set up beforeUpdate lifecycle "hook" functionality
+            async beforeUpdate(updatedUserData) {
+                updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+                return updatedUserData;
+            }
+        },
+
         //TABLE CONFIGURATION OPTIONS GO HERE (https://sequelize.org/v5/manual/models-definition.html#configuration))
         // pass in our imported sequelize connection (the direct connection to our database)
         sequelize,
