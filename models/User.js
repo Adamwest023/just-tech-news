@@ -23,7 +23,7 @@ User.init(
         id: {
             //use the special Sequelize DataTypes object to provide what type of data it is
             type: DataTypes.INTEGER,
-            //this is the eqvivalent of SQL's `Not Null` option
+            //this is the equivalent of SQL's `Not Null` option
             allowNull: false,
             //instruct that this is the primary key
             primaryKey: true,
@@ -40,7 +40,7 @@ User.init(
             type: DataTypes.STRING,
             //there cannot be any duplicate email values in this table
             unique: true,
-            //if allowNull is set to false, we can run out data throught validators before creating the table data
+            //if allowNull is set to false, we can run out data through validators before creating the table data
             validate: {
                 isEmail: true
             }
@@ -59,7 +59,7 @@ User.init(
         //use hooks for bcrypt to encrypt passwords
         hooks: {
             //set up beforeCreate lifecycle "hook" functionality
-            async beforeCreate(userData) {
+            async beforeCreate(newUserData) {
                 newUserData.password = await bcrypt.hash(newUserData.password, 10)
                 return newUserData;
             },
