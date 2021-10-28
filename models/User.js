@@ -38,7 +38,7 @@ User.init(
         //define an email colum
         email: {
             type: DataTypes.STRING,
-            allowNull:false,
+            allowNull: false,
             //there cannot be any duplicate email values in this table
             unique: true,
             //if allowNull is set to false, we can run out data through validators before creating the table data

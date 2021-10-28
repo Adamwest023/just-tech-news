@@ -15,7 +15,7 @@ Vote.init(
         },
         user_id: {
             type: DataTypes.INTEGER,
-            allowNull:false,
+            allowNull: false,
             //a foreign key that will be linking to the user model
             references: {
                 model: 'user',
@@ -24,7 +24,7 @@ Vote.init(
         },
         post_id: {
             type: DataTypes.INTEGER,
-            allowNull:false,
+            allowNull: false,
             //a foreign key that will be linking to the post model
             references: {
                 model: 'post',

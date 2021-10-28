@@ -30,11 +30,11 @@ router.get('/:id', (req, res) => {
         },
         include: [
             {
-                model:Post,
-                attributes:['id','title','post_url','created_at']
+                model: Post,
+                attributes: ['id', 'title', 'post_url', 'created_at']
             },
             {
-                model:Post,
+                model: Post,
                 attributes: ['title'],
                 through: Vote,
                 as: 'voted_posts'
@@ -88,16 +88,16 @@ router.post('/login', (req, res) => {
             res.status(400).json({ message: 'No user with that email address!' });
             return;
         }
-       //res.json({ user: dbUserData });
+        //res.json({ user: dbUserData });
         //verify user
         //the checkPassword instance method() is called on the dbUserData as a conditional statement 
         const validPassword = dbUserData.checkPassword(req.body.password);
         //control statement 
-        if(!validPassword) {
-            res.status(400).json({ message: 'Incorrect password!'});
+        if (!validPassword) {
+            res.status(400).json({ message: 'Incorrect password!' });
             return;
         }
-        res.json({ user: dbUserData, message: 'You are now logged it!'});
+        res.json({ user: dbUserData, message: 'You are now logged it!' });
     });
 });
 

@@ -9,7 +9,7 @@ const Vote = require('./Vote');
 
 //creates associations between models
 User.hasMany(Post, {
-   //connects to post through the user_id that is connected to the User(id)
+    //connects to post through the user_id that is connected to the User(id)
     foreignKey: 'user_id'
 });
 
@@ -33,7 +33,7 @@ User.belongsToMany(Post, {
 
 Post.belongsToMany(User, {
     //connects to User through Vote model 
-    through:Vote,
+    through: Vote,
     as: 'voted_posts',
     foreignKey: 'post_id'
 });
