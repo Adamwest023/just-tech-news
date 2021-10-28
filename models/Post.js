@@ -6,9 +6,30 @@ const sequelize = require('../config/connection');
 
 //create Post model extending from the Model class
 class Post extends Model {
-
-}
-
+    static upvote(body, models) {
+        //sequelize model method that replaces the code in the Put route 
+      return models.Vote.create({
+        user_id: body.user_id,
+        post_id: body.post_id
+      }).then(() => {
+        return Post.findOne({
+          where: {
+            id: body.post_id
+          },
+          attributes: [
+            'id',
+            'post_url',
+            'title',
+            'created_at',
+            [
+              sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),
+              'vote_count'
+            ]
+          ]
+        });
+      });
+    }
+  }
 Post.init(
     //defining the Post Model's schema
     {

@@ -1,8 +1,9 @@
 //calling router 
 const router = require('express').Router();
 
+const sequelize = require('../../config/connection');
 //calling our  Post and our User Model 
-const { Post, User } = require('../../models');
+const { Post, User, Vote } = require('../../models');
 
 
 //get all users route
@@ -10,7 +11,12 @@ router.get('/', (req, res) => {
     Post.findAll({
         //query configuration 
         //finding with certain attributes 
-        attributes: ['id', 'post_url', 'title', 'created_at'],
+        attributes: ['id',
+            'post_url',
+            'title',
+            'created_at',
+            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+        ],
         //adds an order to how posts are viewed
         order: [['created_at', 'DESC']],
         //include the JOIN to the User table
@@ -31,13 +37,19 @@ router.get('/', (req, res) => {
 });
 
 // route for single entry
-router.get('./:id', (req, res) => {
+router.get('/:id', (req, res) => {
     Post.findOne({
         //uses a where requirment for finding one individual id 
         where: {
             id: req.params.id
         },
-        attributes: ['id', 'post_url', 'title', 'created_at'],
+        attributes: [
+            'id',
+            'post_url',
+            'title',
+            'created_at',
+            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+        ],
         include: [
             {
                 model: User,
@@ -70,6 +82,18 @@ router.post('/', (req, res) => {
         .catch(err => {
             console.log(err);
             res.status(500).json(err);
+        });
+});
+
+//route for voting on a post
+//Put /api/post/upvote
+router.put('/upvote', (req, res) => {
+    // custom static method created in models/Post.js
+    Post.upvote(req.body, {Vote})
+        .then(updatedPostData => res.json(updatedPostData))
+        .catch(err => {
+            console.log(err);
+            res.status(400).json(err);
         });
 });
 

@@ -2,7 +2,7 @@
 const router = require('express').Router();
 
 //calling our User Model 
-const { User } = require('../../models');
+const { User, Post, Vote } = require('../../models');
 
 //Get /api/users
 router.get('/', (req, res) => {
@@ -27,7 +27,19 @@ router.get('/:id', (req, res) => {
         //parameters for our search
         where: {
             id: req.params.id
-        }
+        },
+        include: [
+            {
+                model:Post,
+                attributes:['id','title','post_url','created_at']
+            },
+            {
+                model:Post,
+                attributes: ['title'],
+                through: Vote,
+                as: 'voted_posts'
+            }
+        ]
     })
         //returning our search to the json object
         .then(dbUserData => {
