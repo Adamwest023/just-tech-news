@@ -7,6 +7,9 @@ const Post = require('./Post');
 //imports the Vote Model
 const Vote = require('./Vote');
 
+//import Comment Model
+const Comment = require('./Comment');
+
 //creates associations between models
 User.hasMany(Post, {
     //connects to post through the user_id that is connected to the User(id)
@@ -54,6 +57,25 @@ User.hasMany(Vote, {
 
 Post.hasMany(Vote, {
     foreignKey: 'post_id'
-})
+});
+
+Comment.belongsTo(User, {
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
+  });
+  
+  Comment.belongsTo(Post, {
+    foreignKey: 'post_id',
+    onDelete: 'SET NULL'
+  });
+  
+  User.hasMany(Comment, {
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
+  });
+  
+  Post.hasMany(Comment, {
+    foreignKey: 'post_id'
+  });
 //exports the Model as an object with Model as a property
-module.exports = { User, Post, Vote };
+module.exports = { User, Post, Vote, Comment };

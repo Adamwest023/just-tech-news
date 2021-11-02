@@ -3,7 +3,7 @@
 const router = require('express').Router();
 
 //connects the index file with our routes
-const apiRoutes = require('./api');
+const apiRoutes = require('./api/');
 const homeRoutes = require('./home-routes');
 
 //allows router to use those routes

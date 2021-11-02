@@ -5,7 +5,7 @@ const router = require('express').Router();
 const sequelize = require('sequelize');
 
 //call models 
-const {Post,User, Comment} = require('../models')
+const {Post,User, Comment, Vote,} = require('../models')
 
 //route for homepage using .render() don't delete for note purposes
 // router.get('/', (req,res) => {
