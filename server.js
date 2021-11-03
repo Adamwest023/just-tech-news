@@ -36,9 +36,9 @@ app.set('view engine', 'handlebars');
 //middleware 
 //allows the server.js to connect to other paths
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 //the .static allows for folder contents to be used as static assets which is useful for front-end specific files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 
 //the routes variable is set up connecting all of our routes to one point 
