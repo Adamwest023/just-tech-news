@@ -1,6 +1,7 @@
 //calling router 
 const router = require('express').Router();
 
+const { route } = require('.');
 //calling our User Model 
 const { User, Post, Comment, Vote } = require('../../models');
 
@@ -38,10 +39,10 @@ router.get('/:id', (req, res) => {
                 model: Comment,
                 attributes: ['id', 'comment_text', 'created_at'],
                 include: {
-                  model: Post,
-                  attributes: ['title']
+                    model: Post,
+                    attributes: ['title']
                 }
-              },
+            },
             {
                 model: Post,
                 attributes: ['title'],
@@ -75,7 +76,15 @@ router.post('/', (req, res) => {
         password: req.body.password
     })
         //adds information to the dbUserData json object
-        .then(dbUserData => res.json(dbUserData))
+        .then(dbUserData => {
+            req.session.save(() => {
+                req.session.user_id = dbUserData.id;
+                req.session.username = dbUserData.username;
+                req.session.loggedIn = true;
+
+                res.json(dbUserData);
+            })
+        })
         //catch any errors
         .catch(err => {
             console.log(err);
@@ -106,9 +115,32 @@ router.post('/login', (req, res) => {
             res.status(400).json({ message: 'Incorrect password!' });
             return;
         }
-        res.json({ user: dbUserData, message: 'You are now logged it!' });
+        req.session.save(() => {
+            //declare session variables
+            req.session.user_id = dbUserData.id,
+                req.session.username = dbUserData.username,
+                req.session.loggedIn = true;
+
+            res.json({ user: dbUserData, message: "You are now logged in!" })
+        });
     });
 });
+
+
+//a route to logout
+router.post('/logout', (req, res) => {
+    //use the destroy() to clear the session
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+          res.status(204).end();
+        });
+      }
+      else {
+        res.status(404).end();
+      }
+
+});
+
 
 //Post api/users/1
 router.put('/:id', (req, res) => {
@@ -153,5 +185,7 @@ router.delete('/:id', (req, res) => {
             res.status(500).json(err);
         });
 });
+
+
 
 module.exports = router;

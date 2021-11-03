@@ -2,10 +2,10 @@
 const router = require('express').Router();
 
 //call sequelize
-const sequelize = require('sequelize');
+const sequelize = require('../config/connection');
 
 //call models 
-const {Post,User, Comment, Vote,} = require('../models')
+const { Post, User, Comment, Vote, } = require('../models')
 
 //route for homepage using .render() don't delete for note purposes
 // router.get('/', (req,res) => {
@@ -27,46 +27,61 @@ const {Post,User, Comment, Vote,} = require('../models')
 //     });
 // });
 
-router.get('/', (req,res) => {
+//homepage route
+router.get('/', (req, res) => {
+    console.log(req.session);
     //using a sequelize query to return all post to populate out homepage template
     //using the Post Model
     Post.findAll({
-         //finding with certain attributes 
+        //finding with certain attributes 
         attributes: [
             'id',
             'post_url',
             'title',
             'created_at',
-            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'),'vote_count']
+            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
         ],
         //joins the Comment Model at username and model User at username
         include: [
             {
                 model: Comment,
-                attributes: ['id','comment_text','post_id','user_id','created_at'],
-                include:{
-                    model:User,
+                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                include: {
+                    model: User,
                     attributes: ['username']
                 }
             },
             {
                 model: User,
-                attributes:['username']
+                attributes: ['username']
             }
         ]
     })
-    .then(dbPostData => {
-        //get the entire array of posts 
-        //to serialize the object down to only the properties you need use .get()
-        const posts = dbPostData.map(post.get({plain:true}));
-        //pass a single post object into the homepage template
-        res.render('homepage', {posts});
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json(err);
-    });
-})
+        .then(dbPostData => {
+            //get the entire array of posts 
+            //to serialize the object down to only the properties you need use .get()
+            const posts = dbPostData.map(post => post.get({ plain: true }));
+            //pass a single post object into the homepage template
+            res.render('homepage', { posts });
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+});
+
+//route for login template
+router.get('/login', (req, res) => {
+    //if you are logged in go home 
+    if (req.session.loggedIn) {
+        res.redirect('/');
+        return;
+    }
+
+    res.render('login');
+});
+
+
 
 
 module.exports = router;

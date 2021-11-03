@@ -11,14 +11,13 @@ router.get('/', (req, res) => {
     Post.findAll({
         //query configuration 
         //finding with certain attributes 
-        attributes: ['id',
+        attributes: [
+            'id',
             'post_url',
             'title',
             'created_at',
             [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
         ],
-        //adds an order to how posts are viewed
-        order: [['created_at', 'DESC']],
         //include the JOIN to the User table
         include: [
             {
@@ -47,7 +46,7 @@ router.get('/', (req, res) => {
 // route for single entry
 router.get('/:id', (req, res) => {
     Post.findOne({
-        //uses a where requirment for finding one individual id 
+        //uses a where requirement for finding one individual id 
         where: {
             id: req.params.id
         },
@@ -106,7 +105,7 @@ router.post('/', (req, res) => {
 router.put('/upvote', (req, res) => {
     // custom static method created in models/Post.js
     Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
-        .then(updatedPostData => res.json(updatedPostData))
+        .then(updatedVoteData => res.json(updatedVoteData))
         .catch(err => {
             console.log(err);
             res.status(400).json(err);
