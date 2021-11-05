@@ -4,6 +4,8 @@ const express = require('express');
 const session = require('express-session');
 //adds our template engine handlebars
 const exphbs = require('express-handlebars');
+//imports helpers
+const helpers = require('./utils/helpers');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -27,7 +29,7 @@ const sess = {
 //express-session middleware
 app.use(session(sess));
 
-const hbs = exphbs.create({});
+const hbs = exphbs.create({ helpers});
 
 //middleware for our template engine
 app.engine('handlebars', hbs.engine);
