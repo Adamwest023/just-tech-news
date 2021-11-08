@@ -1,9 +1,9 @@
 //calling router 
 const router = require('express').Router();
-
 const sequelize = require('../../config/connection');
 //calling our  Post and our User Model 
 const { Post, User, Comment, Vote } = require('../../models');
+const withAuth = require('../../utils/auth');
 
 
 //get all users route
@@ -86,7 +86,7 @@ router.get('/:id', (req, res) => {
 });
 
 //route for a post creation
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // expects {title: 'Taskmaster goes public!', post_url: 'https://taskmaster.com/press', user_id: 1}
     Post.create({
         title: req.body.title,
@@ -102,22 +102,22 @@ router.post('/', (req, res) => {
 
 //route for voting on a post
 //Put /api/post/upvote
-router.put('/upvote', (req, res) => {
+router.put('/upvote', withAuth, (req, res) => {
     //make sure the session exists first
-    if(req.session) {
-    //pass session id along with all destructured properties on req.body
-    // custom static method created in models/Post.js
-    Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
-        .then(updatedVoteData => res.json(updatedVoteData))
-        .catch(err => {
-            console.log(err);
-            res.status(400).json(err);
-        });
+    if (req.session) {
+        //pass session id along with all destructured properties on req.body
+        // custom static method created in models/Post.js
+        Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
+            .then(updatedVoteData => res.json(updatedVoteData))
+            .catch(err => {
+                console.log(err);
+                res.status(400).json(err);
+            });
     }
-    });
+});
 
 //route to update a post 
-router.put('/:id', (req, res) => {
+router.put('/:id', withAuth, (req, res) => {
     Post.update(
         //use the title value to replace the title fof a post
         {
@@ -142,7 +142,7 @@ router.put('/:id', (req, res) => {
         });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     Post.destroy({
         where: {
             id: req.params.id

@@ -15,12 +15,16 @@
         <a href="/">Just Tech News</a>
       </h1>
       <nav>
+        {{!-- if logged in the dashboard.handlebars will appear --}}
         {{#if loggedIn}}
+        <a href="/dashboard">dashboard</a>
         <button id="logout" class="btn-no-style">logout</button>
+        {{!-- if not logged in the user will only see the login button --}}
         {{else}}
         <a href="/login">login</a>
         {{/if}}
       </nav>
+
     </header>
     <main>
       {{{ body }}}
@@ -30,9 +34,9 @@
     </footer>
   </div>
 
-{{#if loggedIn}}
-<script src="/javascript/logout.js"></script>
-{{/if}}
+  {{#if loggedIn}}
+  <script src="/javascript/logout.js"></script>
+  {{/if}}
 </body>
 
 </html>

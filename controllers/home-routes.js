@@ -73,7 +73,7 @@ router.get('/', (req, res) => {
         });
 });
 
-
+//get a single post 
 router.get('/post/:id', (req, res) => {
     Post.findOne({
 

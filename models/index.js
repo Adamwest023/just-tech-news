@@ -20,7 +20,8 @@ User.hasMany(Post, {
 //post can belong to one user, not many users
 Post.belongsTo(User, {
     //using same foreign key
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete:'SET NULL'
 });
 
 //Many to many connections
